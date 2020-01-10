@@ -1,0 +1,11 @@
+#ignore node_modules
+node_modules/
+
+#ignore .env file
+.env
+
+#ignore any .rest file
+*.rest
+
+#ignore views temporarily
+views/
