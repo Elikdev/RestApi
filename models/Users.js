@@ -14,10 +14,6 @@ const userSchema = mongoose.Schema(
 			type: String,
 			required: true
 		},
-		role: {
-			type: String,
-			required: true
-		},
 		password: {
 			type: String,
 			required: true
@@ -25,6 +21,14 @@ const userSchema = mongoose.Schema(
 		profile_details: {
 			type: String,
 			required: true
+		},
+		role: {
+			type: String,
+			default: 'basic',
+			enum: ['basic', 'tutor', 'admin']
+		},
+		accessToken: {
+			type: String
 		}
 	},
 	{

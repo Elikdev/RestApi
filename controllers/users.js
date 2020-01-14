@@ -23,11 +23,7 @@ exports.registerUser = (req, res) => {
 			text: 'Please enter your email!'
 		});
 	}
-	if (!req.body.role) {
-		errors.push({
-			text: 'Please add a role!'
-		});
-	}
+
 	if (!req.body.password) {
 		errors.push({
 			text: 'Please enter your password'
@@ -52,17 +48,23 @@ exports.registerUser = (req, res) => {
 							firstname: req.body.firstname,
 							lastname: req.body.lastname,
 							email: req.body.email,
-							role: req.body.role,
+							role: req.body.role || 'basic',
 							password: hashedPasword,
 							profile_details: req.body.profile_details
 						});
-
+						accessToken = jwt.sign(
+							{ userid: user._id, userRole: user.role },
+							process.env.ACCESS_TOKEN,
+							{ expiresIn: '1d' }
+						);
+						user.accessToken = accessToken;
 						//save user to database
 						user
 							.save()
 							.then(() => {
 								res.status(201).json({
-									message: 'user created successfully!'
+									message: 'user created successfully!',
+									accessToken: accessToken
 								});
 							})
 							.catch(error => {
@@ -105,15 +107,29 @@ exports.loginUser = (req, res) => {
 							});
 						}
 						//generate a token for the user
-						const token = jwt.sign(
-							{ userId: user._id },
-							process.env.ACCESS_TOKEN
+						const accessToken = jwt.sign(
+							{ userId: user._id, userRole: user.role },
+							process.env.ACCESS_TOKEN,
+							{ expiresIn: '1d' }
 						);
-						res.status(200).json({
-							message: 'User logged in successfully!',
-							id: user._id,
-							token: token
-						});
+						User.findByIdAndUpdate(
+							user._id,
+							{ accessToken },
+							{ useFindAndModify: false }
+						)
+							.then(() => {
+								res.status(200).json({
+									message: 'User logged in successfully!',
+									id: user._id,
+									role: user.role,
+									accessToken: accessToken
+								});
+							})
+							.catch(err => {
+								res.status.json({
+									message: 'Login was not successful'
+								});
+							});
 					})
 					.catch(error => {
 						res.status(500).json({
@@ -132,35 +148,36 @@ exports.loginUser = (req, res) => {
 };
 
 exports.updateUserProfile = (req, res) => {
-	const user = new User({
-		_id: req.params.id,
-		firstname: req.body.firstname,
-		lastname: req.body.lastname,
-		email: req.body.email,
-		role: req.body.role,
-		password: req.body.password,
-		profile_details: req.body.profile_details
-	});
+	const user = req.body;
 
 	//verify the token in the header before allowing update
-	jwt.verify(req.token, process.env.ACCESS_TOKEN, err => {
-		if (err) {
-			res.status(403).json({
-				message: 'You do not have access to this page!'
+	const { userRole, exp } = jwt.verify(req.token, process.env.ACCESS_TOKEN);
+	//check if token has expired
+	if (exp < Date.now().valueOf() / 1000) {
+		return res.status(401).json({ error: 'JWT has expired' });
+	}
+	if (userRole == 'basic') {
+		return res.status(403).json({ error: 'Not authorized to view this page' });
+	}
+
+	User.updateOne({ _id: req.params.id }, user)
+		.then(() => {
+			res.status(202).json({
+				message: 'profile updated successfully'
 			});
-		} else {
-			User.updateOne({ _id: req.params.id }, user)
-				.then(() => {
-					res.status(202).json({
-						message: 'profile updated successfully'
-					});
-				})
-				.catch(error => {
-					res.status(501).json({
-						message: 'error in updating user profile!',
-						error: error.message
-					});
-				});
-		}
+		})
+		.catch(error => {
+			res.status(501).json({
+				message: 'error in updating user profile!',
+				error: error.message
+			});
+		});
+};
+
+exports.getUser = (req, res) => {
+	const user = 'myname';
+	res.status(200).json({
+		message: 'successful!',
+		user: user
 	});
 };

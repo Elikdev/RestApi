@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const routes = require('./routes/index');
+const adminRouter = require('./routes/admin');
 const tutorRouter = require('./routes/tutor');
 const userRouter = require('./routes/users');
 const exphbs = require('express-handlebars');
@@ -39,6 +40,7 @@ app.get('/', (req, res) => {
 
 //routes
 app.use('/', routes);
+app.use('/admin', adminRouter);
 app.use('/tutor', tutorRouter);
 app.use('/user', userRouter);
 
