@@ -10,6 +10,7 @@
 	"author": "elik",
 	"license": "ISC",
 	"dependencies": {
+		"accesscontrol": "^2.2.1",
 		"bcryptjs": "^2.4.3",
 		"body-parser": "^1.19.0",
 		"dotenv": "^8.2.0",
@@ -19,6 +20,8 @@
 		"mongoose": "^5.8.2"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.2"
+		"dot-prop": "^5.2.0",
+		"minimist": "^1.2.5",
+		"nodemon": "^2.0.4"
 	}
 }

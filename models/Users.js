@@ -4,31 +4,41 @@ const userSchema = mongoose.Schema(
 	{
 		firstname: {
 			type: String,
-			required: true
+			required: true,
 		},
 		lastname: {
 			type: String,
-			required: true
+			required: true,
 		},
 		email: {
 			type: String,
-			required: true
-		},
-		role: {
-			type: String,
-			required: true
+			required: true,
 		},
 		password: {
 			type: String,
-			required: true
+			required: true,
 		},
 		profile_details: {
 			type: String,
-			required: true
-		}
+			required: true,
+		},
+		role: {
+			type: String,
+			default: 'basic',
+			enum: ['basic', 'tutor', 'admin'],
+		},
+		accessToken: {
+			type: String,
+		},
+		tutor: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'Tutor',
+			},
+		],
 	},
 	{
-		timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+		timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
 	}
 );
 
