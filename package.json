@@ -20,6 +20,8 @@
 		"mongoose": "^5.8.2"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.2"
+		"dot-prop": "^5.2.0",
+		"minimist": "^1.2.5",
+		"nodemon": "^2.0.4"
 	}
 }
