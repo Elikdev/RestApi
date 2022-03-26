@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"dot-prop": "^5.2.0",
-		"minimist": "^1.2.5",
+		"minimist": "^1.2.6",
 		"nodemon": "^2.0.4"
 	}
 }
